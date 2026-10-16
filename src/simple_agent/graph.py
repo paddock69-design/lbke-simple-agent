@@ -5,6 +5,7 @@ from typing import TypedDict
 
 import os
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 
 from langchain.agents import AgentState, create_agent
 from langchain.agents.middleware import Runtime
@@ -59,10 +60,14 @@ def utc_now() -> str:
     """Return the current UTC timestamp in ISO format."""
     return datetime.now(tz=timezone.utc).isoformat()
 
+@tool
+def local_now(tz_name: str) -> str:
+    """Return the current local time for an IANA time zone name, e.g. 'Europe/Paris' for Lyon or Paris."""
+    return datetime.now(tz=ZoneInfo(tz_name)).isoformat()
 
 graph = create_agent(
     model=model,  # DEFAULT_MODEL,
-    tools=[utc_now, read_preference, update_preference],
+    tools=[utc_now, local_now, read_preference, update_preference],
     state_schema=State,
     context_schema=Context,
     system_prompt=(
