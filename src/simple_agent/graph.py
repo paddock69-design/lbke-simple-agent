@@ -60,10 +60,15 @@ def utc_now() -> str:
     """Return the current UTC timestamp in ISO format."""
     return datetime.now(tz=timezone.utc).isoformat()
 
+def to_local(instant: datetime, tz_name: str) -> str:
+    """Convert an aware datetime to local time in an IANA time zone, as ISO text."""
+    return instant.astimezone(ZoneInfo(tz_name)).isoformat()
+
+
 @tool
 def local_now(tz_name: str) -> str:
     """Return the current local time for an IANA time zone name, e.g. 'Europe/Paris' for Lyon or Paris."""
-    return datetime.now(tz=ZoneInfo(tz_name)).isoformat()
+    return to_local(datetime.now(tz=timezone.utc), tz_name)
 
 graph = create_agent(
     model=model,  # DEFAULT_MODEL,
